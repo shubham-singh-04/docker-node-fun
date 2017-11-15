@@ -19,7 +19,7 @@ function LATEST {
   fi
 }
 
-docker build -t $USER/docker_node_fun .
+docker build -t $USER/$PROGRAM .
 docker tag $USER/$PROGRAM $USER/$PROGRAM:`LATEST`
 docker images | grep "$PROGRAM"
 
