@@ -1,0 +1,58 @@
+#!/bin/bash
+
+NAME="ubuntu1"
+IMAGE="ubuntu:17.10"
+
+# From https://github.com/nodejs/docker-node
+# See also https://docs.docker.com/engine/reference/run
+#
+# Containers started in detached mode exit when the root process used to run the container exits,
+# unless the --rm option is also specified.
+
+echo "Running $NAME"
+docker run \
+  -d                    `# Run in background, detached mode` \
+  -e VAR1="Blah blah"   `# Define environment variable` \
+  -i                    `# Keep STDIN open even if not attached` \
+  --name "$NAME"        `# Friendly name to refer to this container instance` \
+  --rm                  `# Remove container when it or the daemon exits` \
+  --sig-proxy=false     `# Ignore CTRL-c` \
+  -t                    `# Allocate a pseudo-TTY` \
+  "$IMAGE" /bin/bash
+
+MSG="Attaching to $NAME.
+Type ^d to send EOF to STDIN, which will cause the container to shut down.
+Detach from the ubuntu container and leave it running by typing CTRL-p CTRL-q."
+
+echo "
+Execing bash in $NAME, just displays the value of the VAR1 environment variable and exits."
+X="$(
+  docker exec \
+    -i                   `# Keep STDIN open even if not attached` \
+    -t                   `# Allocate a pseudo-TTY`\
+    "$NAME" /bin/bash -c 'echo $VAR1'
+)"
+echo "The value of VAR1 was $X"
+
+echo "
+Execing bash in $NAME again, this time with an interactive session."
+docker exec \
+  -i                   `# Keep STDIN open even if not attached`\
+  -t                   `# Allocate a pseudo-TTY`\
+  "$NAME" /bin/bash
+
+#echo "
+#$MSG"
+#docker attach --sig-proxy=false "$NAME"
+
+#echo "
+#Re-$MSG"
+#docker attach --sig-proxy=false "$NAME"
+
+echo "
+Stopping $NAME"
+docker stop "$NAME"
+
+#echo "
+#Removing $NAME (not required because of the --rm argument)"
+#docker rm "$NAME"

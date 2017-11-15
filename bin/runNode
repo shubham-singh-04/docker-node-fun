@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Runs Node.js in a docker container, demonstrates how to attach / exec multiple times
+
+NAME=nodejs1
+IMAGE="node:9.2"
+
+function attach {
+  echo "
+$1Attaching to $NAME.
+Type ^d to send EOF to STDIN, which will cause the container to shut down without saving anything.
+Detach from the node.js container and leave it running by typing CTRL-p CTRL-q."
+
+  docker attach "$NAME"
+}
+
+function exec {
+  echo "
+Execing node in $NAME and running $1."
+  docker exec \
+    -i                   `# inherit STDIN and STDOUT from the current shell process` \
+    -t                   `# Allocate a pseudo-TTY` \
+    "$NAME" node -e "$@"
+}
+
+# From https://github.com/nodejs/docker-node
+# See also https://docs.docker.com/engine/reference/run
+#
+# Containers started in detached mode exit when the root process used to run the container exits,
+# unless the --rm option is also specified.
+# If -d is used with --rm, the container is removed when it exits or when the daemon exits.
+
+docker run \
+  -d                            `# Run in background (detached mode)` \
+  -e NPM_CONFIG_LOGLEVEL=info   `# Sets environment variable that controls verbosity` \
+  -i                            `# Keep STDIN open even if not attached` \
+  --name "$NAME"                `# Friendly name to refer to this container instance` \
+  --rm                          `# Remove container when it or the daemon exits` \
+  --sig-proxy=false             `# Ignore CTRL-c` \
+  -t                            `# Allocate a pseudo-TTY` \
+  -v "$PWD":/usr/src/app        `# Mount specified directory inside the docker container as a volume` \
+  -w /usr/src/app               `# Set working directory within the container` \
+  "$IMAGE" node -i              `# Start node.js and opens the REPL even if stdin does not appear to be a terminal.`
+
+# docker run node npm --loglevel=warn ...
+
+exec "var x = 3;console.log(x)"
+exec ".load bin/script.js"
+
+#attach ""
+#attach "Re-"
+
+#Stopping $NAME"
+#docker stop "$NAME"

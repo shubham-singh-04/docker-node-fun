@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# Sample usage:
+# bin/run
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
+cd "$DIR"
+
+PROGRAM=docker_node_fun
+
+# Manually provide a monotonically increasing tag number (from 1)
+function LATEST {
+  IMAGES=$(docker images | grep "$PROGRAM")
+  if [ "$IMAGES" ]; then
+    N=$(echo "$IMAGES" | grep -v latest | awk '{print $2}' | sort | head)
+    echo $(($N + 1))
+  else
+    echo 1
+  fi
+}
+
+docker build -t $USER/docker_node_fun .
+docker tag $USER/$PROGRAM $USER/$PROGRAM:`LATEST`
+docker images | grep "$PROGRAM"
+
+# Run it
+docker run -d "$USER/$PROGRAM"
+CONTAINER_ID=$(docker ps -l | tail -n 1 | awk '{print $1}')
+docker logs -f --tail=all $CONTAINER_ID

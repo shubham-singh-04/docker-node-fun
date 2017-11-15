@@ -1,0 +1,12 @@
+{
+  "name": "docker_node_fun",
+  "version": "0.1.0",
+  "description": "Node.js on Docker",
+  "author": "Mike Slinn <mslinn@micronauticsresearch.com>",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+  }
+}
