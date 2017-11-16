@@ -8,11 +8,12 @@
 Fooling around with Docker and Node.js.
 
 ## Building and Running
-The `bin/run` script does this.
+The [bin/run](https://github.com/mslinn/docker-node-fun/blob/master/bin/run) script builds and runs the program.
 
     $ bin/run
 
-The following merely explains what the `bin/run` script does.
+The following explains what the `bin/run` script does at a high level.
+The actual script is more complex.
 
 ### Building
 The `-t` flag tags the image so it is easier to find using the `docker images` command.
