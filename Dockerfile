@@ -1,6 +1,6 @@
 # Start with node 9.2 base image
 # FROM must be the first command in this file
-FROM node:9.2
+FROM node:14.21.3-bullseye-slim
 
 ENV APP_DIR /usr/src/app
 
